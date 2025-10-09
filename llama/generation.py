@@ -67,13 +67,28 @@ class Llama:
         assert 1 <= max_seq_len <= 8192, f"max_seq_len must be between 1 and 8192, got {max_seq_len}."
         assert os.path.isdir(ckpt_dir), f"Checkpoint directory '{ckpt_dir}' does not exist."
         assert os.path.isfile(tokenizer_path), f"Tokenizer file '{tokenizer_path}' does not exist."
-        
-        if not torch.distributed.is_initialized():
-            torch.distributed.init_process_group("nccl")
-        if not model_parallel_is_initialized():
-            if model_parallel_size is None:
-                model_parallel_size = int(os.environ.get("WORLD_SIZE", 1))
-            initialize_model_parallel(model_parallel_size)
+
+
+#The problem was "nccl" backend works only on CUDA devices 
+#We’ll make distributed initialization safe and flexible:
+# 1. Use "nccl" only when CUDA is available.
+# 2. Fall back to "gloo" otherwise (which works on CPU and single GPU).
+# 3. Don’t initialize the distributed group if we’re in single-process (no WORLD_SIZE > 1).
+# Initialize distributed process group only if needed
+if not torch.distributed.is_initialized():
+    world_size = int(os.environ.get("WORLD_SIZE", 1))
+    if world_size > 1:
+        backend = "nccl" if torch.cuda.is_available() else "gloo"
+        torch.distributed.init_process_group(backend)
+    else:
+        model_parallel_size = 1  # single process, no distributed init
+
+# Initialize model parallel if not already initialized
+if not model_parallel_is_initialized():
+    if model_parallel_size is None:
+        model_parallel_size = int(os.environ.get("WORLD_SIZE", 1))
+    initialize_model_parallel(model_parallel_size)
+
 
         local_rank = int(os.environ.get("LOCAL_RANK", 0))
         torch.cuda.set_device(local_rank)
