@@ -1,164 +1,190 @@
+
 <p align="center">
   <img src="https://github.com/meta-llama/llama3/blob/main/Llama3_Repo.jpeg" width="400"/>
 </p>
 
 <p align="center">
-        🤗 <a href="https://huggingface.co/meta-Llama"> Models on Hugging Face</a>&nbsp | <a href="https://ai.meta.com/blog/"> Blog</a>&nbsp |  <a href="https://llama.meta.com/">Website</a>&nbsp | <a href="https://llama.meta.com/get-started/">Get Started</a>&nbsp
-<br>
+  🤗 <a href="https://huggingface.co/meta-llama">Models on Hugging Face</a> &nbsp;|&nbsp;
+  <a href="https://www.llama.com/docs/overview/">Docs</a> &nbsp;|&nbsp;
+  <a href="https://ai.meta.com/blog/">Blog</a> &nbsp;|&nbsp;
+  <a href="https://llama.meta.com/">Website</a> &nbsp;|&nbsp;
+  <a href="https://llama.meta.com/get-started/">Get Started</a> &nbsp;|&nbsp;
+  <a href="https://github.com/llamastack/llama-stack">Llama Stack</a>
+</p>
 
 ---
 
-## **Note of deprecation**
+## ⚠️ Repository status: Deprecated / archived
 
-Thank you for developing with Llama models. As part of the Llama 3.1 release, we’ve consolidated GitHub repos and added some additional repos as we’ve expanded Llama’s functionality into being an e2e Llama Stack. Please use the following repos going forward:
-- [llama-models](https://github.com/meta-llama/llama-models) - Central repo for the foundation models including basic utilities, model cards, license and use policies
-- [PurpleLlama](https://github.com/meta-llama/PurpleLlama) - Key component of Llama Stack focusing on safety risks and inference time mitigations 
-- [llama-toolchain](https://github.com/meta-llama/llama-toolchain) - Model development (inference/fine-tuning/safety shields/synthetic data generation) interfaces and canonical implementations
-- [llama-agentic-system](https://github.com/meta-llama/llama-agentic-system) - E2E standalone Llama Stack system, along with opinionated underlying interface, that enables creation of agentic applications
-- [llama-cookbook](https://github.com/meta-llama/llama-recipes) - Community driven scripts and integrations
+This repository is kept as a **historical, minimal reference** for running the original Meta Llama 3 (8B / 70B) native checkpoints.
 
-If you have any questions, please feel free to file an issue on any of the above repos and we will do our best to respond in a timely manner. 
+**New model releases, tooling, and end-to-end examples for the Llama 3 family (and newer) have moved to the repos below.** Please use these going forward:
 
-Thank you!
+- **llama-models** — model cards, licenses + acceptable use policies, utilities, and the recommended `llama-model` CLI for downloading and verifying weights  
+  https://github.com/meta-llama/llama-models
+- **Llama Stack** — unified APIs + CLI/SDKs and verified distributions for inference, RAG, agents, tools, safety, evals  
+  https://github.com/llamastack/llama-stack
+- **Llama Stack Apps** — example applications and agentic components built on top of Llama Stack  
+  https://github.com/llamastack/llama-stack-apps
+- **PurpleLlama** — safety tooling and evaluations (e.g., Llama Guard, safeguards, mitigations)  
+  https://github.com/meta-llama/PurpleLlama
+- **llama-agentic-system** — a standalone, opinionated agentic system (useful reference; many examples now live under Llama Stack Apps)  
+  https://github.com/meta-llama/llama-agentic-system
+- **llama-cookbook** — community + official recipes for inference, fine-tuning, RAG, and integrations  
+  https://github.com/meta-llama/llama-cookbook
 
+If you have questions, please open issues in the most relevant repo above.
 
-# (Deprecated) Meta Llama 3
+---
 
-We are unlocking the power of large language models. Our latest version of Llama is now accessible to individuals, creators, researchers, and businesses of all sizes so that they can experiment, innovate, and scale their ideas responsibly.
+## What’s in this repo?
 
-This release includes model weights and starting code for pre-trained and instruction-tuned Llama 3 language models — including sizes of 8B to 70B parameters.
+A lightweight Python reference implementation for:
+- loading **Llama 3** native checkpoints
+- running local inference (text completion + chat completion examples)
 
-This repository is a minimal example of loading Llama 3 models and running inference. For more detailed examples, see [llama-cookbook](https://github.com/facebookresearch/llama-recipes/).
+For the most up-to-date workflows (downloads, prompt formats, tool-calling, agents, safety, multi-provider deployments), use **llama-models** + **Llama Stack**.
 
-## Download
+---
 
-To download the model weights and tokenizer, please visit the [Meta Llama website](https://llama.meta.com/llama-downloads/) and accept our License.
+## Recommended (current) workflow
 
-Once your request is approved, you will receive a signed URL over email. Then, run the download.sh script, passing the URL provided when prompted to start the download.
-
-Pre-requisites: Ensure you have `wget` and `md5sum` installed. Then run the script: `./download.sh`.
-
-Remember that the links expire after 24 hours and a certain amount of downloads. You can always re-request a link if you start seeing errors such as `403: Forbidden`.
-
-### Access to Hugging Face
-
-We also provide downloads on [Hugging Face](https://huggingface.co/meta-llama), in both transformers and native `llama3` formats. To download the weights from Hugging Face, please follow these steps:
-
-- Visit one of the repos, for example [meta-llama/Meta-Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct).
-- Read and accept the license. Once your request is approved, you'll be granted access to all the Llama 3 models. Note that requests used to take up to one hour to get processed.
-- To download the original native weights to use with this repo, click on the "Files and versions" tab and download the contents of the `original` folder. You can also download them from the command line if you `pip install huggingface-hub`:
+### 1) Download model weights (Meta distribution) with `llama-models`
 
 ```bash
-huggingface-cli download meta-llama/Meta-Llama-3-8B-Instruct --include "original/*" --local-dir meta-llama/Meta-Llama-3-8B-Instruct
+pip install llama-models
+llama-model list
+llama-model download --source meta --model-id CHOSEN_MODEL_ID
+````
+
+You’ll be prompted for the signed URL from the Meta email flow (links expire; you can re-request if needed).
+
+### 2) Build apps with unified APIs using Llama Stack
+
+```bash
+curl -LsSf https://github.com/llamastack/llama-stack/raw/main/scripts/install.sh | bash
 ```
 
-- To use with transformers, the following [pipeline](https://huggingface.co/docs/transformers/en/main_classes/pipelines) snippet will download and cache the weights:
+Then follow the Llama Stack docs to choose a distribution (local or hosted providers) and run inference/RAG/agents consistently.
 
-  ```python
-  import transformers
-  import torch
+---
 
-  model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+## Legacy: Using this repo directly (native checkpoints)
 
-  pipeline = transformers.pipeline(
-    "text-generation",
-    model="meta-llama/Meta-Llama-3-8B-Instruct",
-    model_kwargs={"torch_dtype": torch.bfloat16},
-    device="cuda",
-  )
-  ```
+> This section is provided for backwards compatibility. For new projects, prefer the workflow above.
 
-## Quick Start
+### Install
 
-You can follow the steps below to get up and running with Llama 3 models quickly. These steps will let you run quick inference locally. For more examples, see the [Llama Cookbook repository](https://github.com/facebookresearch/llama-recipes).
+```bash
+pip install -e .
+```
 
-1. Clone and download this repository in a conda env with PyTorch / CUDA.
+### Download (legacy)
 
-2. In the top-level directory run:
-    ```bash
-    pip install -e .
-    ```
-3. Visit the [Meta Llama website](https://llama.meta.com/llama-downloads/) and register to download the model/s.
+To download the model weights and tokenizer, visit the Meta Llama website and accept the license:
+[https://llama.meta.com/llama-downloads/](https://llama.meta.com/llama-downloads/)
 
-4. Once registered, you will get an email with a URL to download the models. You will need this URL when you run the download.sh script.
+Once approved, you’ll receive a signed URL over email. Run:
 
-5. Once you get the email, navigate to your downloaded llama repository and run the download.sh script.
-    - Make sure to grant execution permissions to the download.sh script
-    - During this process, you will be prompted to enter the URL from the email.
-    - Do not use the “Copy Link” option; copy the link from the email manually.
+```bash
+chmod +x download.sh
+./download.sh
+```
 
-6. Once the model/s you want have been downloaded, you can run the model locally using the command below:
+Pre-reqs: `wget` and `md5sum`.
+
+### Quick start (chat)
+
 ```bash
 torchrun --nproc_per_node 1 example_chat_completion.py \
-    --ckpt_dir Meta-Llama-3-8B-Instruct/ \
-    --tokenizer_path Meta-Llama-3-8B-Instruct/tokenizer.model \
-    --max_seq_len 512 --max_batch_size 6
+  --ckpt_dir Meta-Llama-3-8B-Instruct/ \
+  --tokenizer_path Meta-Llama-3-8B-Instruct/tokenizer.model \
+  --max_seq_len 512 --max_batch_size 6
 ```
-**Note**
-- Replace  `Meta-Llama-3-8B-Instruct/` with the path to your checkpoint directory and `Meta-Llama-3-8B-Instruct/tokenizer.model` with the path to your tokenizer model.
-- The `–nproc_per_node` should be set to the [MP](#inference) value for the model you are using.
-- Adjust the `max_seq_len` and `max_batch_size` parameters as needed.
-- This example runs the [example_chat_completion.py](example_chat_completion.py) found in this repository, but you can change that to a different .py file.
+
+Notes:
+
+* Replace `--ckpt_dir` and `--tokenizer_path` with your local paths.
+* Tune `--max_seq_len` and `--max_batch_size` to fit your hardware.
+
+---
 
 ## Inference
 
 Different models require different model-parallel (MP) values:
 
-|  Model | MP |
-|--------|----|
-| 8B     | 1  |
-| 70B    | 8  |
+| Model | MP |
+| ----: | -: |
+|    8B |  1 |
+|   70B |  8 |
 
-All models support sequence length up to 8192 tokens, but we pre-allocate the cache according to `max_seq_len` and `max_batch_size` values. So set those according to your hardware.
+> Models support long context, but KV-cache is preallocated based on `max_seq_len` and `max_batch_size`.
 
-### Pretrained Models
+---
 
-These models are not finetuned for chat or Q&A. They should be prompted so that the expected answer is the natural continuation of the prompt.
+## Hugging Face access
 
-See `example_text_completion.py` for some examples. To illustrate, see the command below to run it with the llama-3-8b model (`nproc_per_node` needs to be set to the `MP` value):
+Llama models are also available on Hugging Face (Transformers and “original” weights):
+[https://huggingface.co/meta-llama](https://huggingface.co/meta-llama)
 
-```
-torchrun --nproc_per_node 1 example_text_completion.py \
-    --ckpt_dir Meta-Llama-3-8B/ \
-    --tokenizer_path Meta-Llama-3-8B/tokenizer.model \
-    --max_seq_len 128 --max_batch_size 4
-```
+Example (download original weights):
 
-### Instruction-tuned Models
-
-The fine-tuned models were trained for dialogue applications. To get the expected features and performance for them, specific formatting defined in [`ChatFormat`](https://github.com/meta-llama/llama3/blob/main/llama/tokenizer.py#L202)
-needs to be followed: The prompt begins with a `<|begin_of_text|>` special token, after which one or more messages follow. Each message starts with the `<|start_header_id|>` tag, the role `system`, `user` or `assistant`, and the `<|end_header_id|>` tag. After a double newline `\n\n`, the message's contents follow. The end of each message is marked by the `<|eot_id|>` token.
-
-You can also deploy additional classifiers to filter out inputs and outputs that are deemed unsafe. See the llama-cookbook repo for [an example](https://github.com/meta-llama/llama-recipes/blob/main/recipes/inference/local_inference/inference.py) of how to add a safety checker to the inputs and outputs of your inference code.
-
-Examples using llama-3-8b-chat:
-
-```
-torchrun --nproc_per_node 1 example_chat_completion.py \
-    --ckpt_dir Meta-Llama-3-8B-Instruct/ \
-    --tokenizer_path Meta-Llama-3-8B-Instruct/tokenizer.model \
-    --max_seq_len 512 --max_batch_size 6
+```bash
+pip install -U huggingface-hub
+huggingface-cli download meta-llama/Meta-Llama-3-8B-Instruct \
+  --include "original/*" \
+  --local-dir meta-llama/Meta-Llama-3-8B-Instruct
 ```
 
-Llama 3 is a new technology that carries potential risks with use. Testing conducted to date has not — and could not — cover all scenarios.
-To help developers address these risks, we have created the [Responsible Use Guide](https://ai.meta.com/static-resource/responsible-use-guide/).
+Example (Transformers inference):
+
+```python
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    torch_dtype=torch.bfloat16,
+    device_map="auto",
+)
+
+messages = [{"role": "user", "content": "Write a haiku about gradient descent."}]
+inputs = tokenizer.apply_chat_template(messages, return_tensors="pt").to(model.device)
+outputs = model.generate(inputs, max_new_tokens=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+```
+
+---
+
+## Responsible use & safety
+
+Llama models can generate harmful or misleading content in some scenarios. For system-level safety, incorporate safeguards such as **PurpleLlama / Llama Guard** and follow the official responsible-use guidance.
+
+---
 
 ## Issues
 
-Please report any software “bug” or other problems with the models through one of the following means:
-- Reporting issues with the model: [https://github.com/meta-llama/llama3/issues](https://github.com/meta-llama/llama3/issues)
-- Reporting risky content generated by the model: [developers.facebook.com/llama_output_feedback](http://developers.facebook.com/llama_output_feedback)
-- Reporting bugs and security concerns: [facebook.com/whitehat/info](http://facebook.com/whitehat/info)
+Because this repo is deprecated, please file issues in the most relevant maintained repo:
 
-## Model Card
-See [MODEL_CARD.md](MODEL_CARD.md).
+* Models / download tooling / licenses: [https://github.com/meta-llama/llama-models/issues](https://github.com/meta-llama/llama-models/issues)
+* Llama Stack APIs / CLI / distributions: [https://github.com/llamastack/llama-stack/issues](https://github.com/llamastack/llama-stack/issues)
+* Safety tooling and evals: [https://github.com/meta-llama/PurpleLlama/issues](https://github.com/meta-llama/PurpleLlama/issues)
+* Recipes / integrations: [https://github.com/meta-llama/llama-cookbook/issues](https://github.com/meta-llama/llama-cookbook/issues)
+
+---
+
+## Model card
+
+See `MODEL_CARD.md`.
 
 ## License
 
-Our model and weights are licensed for researchers and commercial entities, upholding the principles of openness. Our mission is to empower individuals and industry through this opportunity while fostering an environment of discovery and ethical AI advancements.
-
-See the [LICENSE](LICENSE) file, as well as our accompanying [Acceptable Use Policy](USE_POLICY.md)
+See `LICENSE` and `USE_POLICY.md` (and, for the latest policies across Llama versions, refer to `llama-models`).
 
 ## Questions
 
-For common questions, the FAQ can be found [here](https://llama.meta.com/faq), which will be updated over time as new questions arise.
+For FAQs and updated documentation, see:
+[https://www.llama.com/faq/](https://www.llama.com/faq/)
